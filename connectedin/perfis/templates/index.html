@@ -1,70 +1,112 @@
 {% extends  "base.html" %}
-{% block body %}
-<div class="col-lg-12">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <strong>Perfis</strong>
-        </div>
+
+{% block left %}
+<div class="card">
+    <div class="card-header">
+        Perfis
+    </div>
+    <ul class="list-group list-group-flush">
         {% if perfis %}
-        <ul>
             {% for perfil in perfis %}
-                <li>
-                    <a href="{% url 'exibir' perfil.id %}">{{ perfil.nome }}</a>
-                    / {{ perfil.email }}
-                </li>
+                {% if perfil.id != perfil_logado.id %}
+                    <li class="list-group-item"><a href="{% url 'exibir' perfil.id %}">{{ perfil.nome }}</a>/ {{ perfil.email }}</li>
+                {% endif %}
             {% endfor %}
-        </ul>
-    {% else %}
-        <p>Nenhum perfil encontrado.</p>
-    {% endif %}
-    </div>
-    <div class="panel panel-default">
-        {% with total_convites=perfil_logado.convites_recebidos.count %}
-            {% if total_convites %}
-                <div class="panel-heading">
-                    <strong>
-                        Você tem {{ total_convites }}
-                        convite{{ total_convites|pluralize }} aguardando aprovação
-                    </strong>
-                </div>
-                <ul class="list-group">
-                    {% for convite in perfil_logado.convites_recebidos.all %}
-                        <li class="list-group-item">
-                            {{ convite.convidador.nome }}
-                            <a href="{% url 'aceitar' convite.id %}"
-                               class="pull-right">ACEITAR</a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <div class="panel-body">
-                    <p>Nenhum convite recebido</p>
-                </div>
-            {% endif %}
-        {% endwith %}
-    </div>
-    <div class="panel panel-default">
-        {% with total_contatos=perfil_logado.contatos.count %}
-            {% if total_contatos %}
-                <div class="panel-heading">
-                    <strong>
-                        Você tem {{ total_contatos }} contato{{ total_contatos|pluralize }}
-                    </strong>
-                </div>
-                <ul class="list-group">
-                    {% for contato in perfil_logado.contatos.all %}
-                        <a href="{% url 'exibir' contato.id%}"
-                           class="list-group-item">{{ contato.nome }} // {{contato.email}}</a>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <div class="panel-body">
-                    <p>Você não possui contatos no momento</p>
-                </div>
-            {% endif %}
-        {% endwith %}
-    </div>
+        {% else %}
+            <li class="list-group-item">Nenhum perfil encontrado.</li>
+        {% endif %}
+    </ul>
 </div>
 {% endblock %}
 
+{% block center %}
+<div class="card">
+    <div class="card-header">
+        Timeline
+    </div>
+    <ul class="list-group list-group-flush">
+        {% if postagens %}
+            {% for post in postagens %}
+                <li class="list-group-item">
 
+                    <!--       POST VAI AQUI         -->
+
+                </li>
+            {% endfor %}
+        {% else %}
+            <li class="list-group-item">Nenhuma postagem encontrado.</li>
+        {% endif %}
+    </ul>
+</div>
+
+{% endblock %}
+
+{% block right %}
+<div id="accordion">
+    <div class="card">
+        <div class="card-header" id="convites">
+            <h5 class="mb-0">
+                <button class="btn btn-link" data-toggle="collapse" data-target="#collapseConvite" aria-expanded="false" aria-controls="collapseConvite">
+                    Convites
+                    {% with total_contatos=perfil_logado.contatos.count %}
+                    {% if total_contatos %}
+                        <span class="badge badge-primary">{{ total_contatos }}</span>
+                    {% endif %}
+                    {% endwith %}
+                </button>
+            </h5>
+        </div>
+    </div>
+    <div class="card">
+        <div id="collapseConvite" class="collapse show" aria-labelledby="convites" data-parent="#accordion">
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% with total_convites=perfil_logado.convites_recebidos.count %}
+                    {% if total_convites == 0 %}
+                        <li class="list-group-item">Nenhum convite recebido.</li>
+                    {% else %}
+                        {% for convite in perfil_logado.convites_recebidos.all %}
+                            <li class="list-group-item">
+                                {{ convite.convidador.nome }}
+                                <a href="{% url 'aceitar' convite.id %}"
+                                class="pull-right">ACEITAR</a>
+                            </li>
+                        {% endfor %}
+                    {% endif %}
+                    {% endwith %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header" id="contatos">
+            <h5 class="mb-0">
+                <button class="btn btn-link" data-toggle="collapse" data-target="#collapseContatos" aria-expanded="false" aria-controls="collapseContatos">
+                    Contatos
+                </button>
+            </h5>
+        </div>
+    </div>
+
+    <div class="card">
+        <div id="collapseContatos" class="collapse show" aria-labelledby="contatos" data-parent="#accordion">
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% with total_contatos=perfil_logado.contatos.count %}
+                    {% if total_contatos %}
+                        {% for contato in perfil_logado.contatos.all %}
+                            <li class="list-group-item">
+                                <a href="{% url 'exibir' contato.id%}">{{ contato.nome }} // {{contato.email}}</a>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <li class="list-group-item">Você não possui contatos no momento.</li>
+                    {% endif %}
+                    {% endwith %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
