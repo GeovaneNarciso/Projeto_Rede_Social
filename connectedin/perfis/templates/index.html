@@ -12,11 +12,16 @@
         {% for contato in perfil_logado.contatos.all %}
             <li class="list-group-item">
                 <a href="{% url 'exibir' contato.id%}">{{ contato.nome }} // {{ contato.email }}</a>
+                <form method="POST" action="/contatos/{{contato.id}}/desfazer/">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-danger">X</button>
+                </form>
+
             </li>
         {% endfor %}
         {% else %}
             <li class="list-group-item">
-                Você não possui enhum contato no momento
+                Você não possui nenhum contato no momento
             </li>
         {% endif %}
         {% endwith %}
