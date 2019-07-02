@@ -48,3 +48,12 @@ def rejeitar(request, convite_id):
     convite = Convite.objects.get(id=convite_id)
     convite.delete()
     return redirect('index')
+
+
+@login_required
+def desfazer_amizade(request, id_contato):
+    contato_remove = Perfil.objects.get(id=id_contato)
+    perfil_logado = get_perfil_logado(request)
+    perfil_logado.contatos.remove(contato_remove)
+    
+    return redirect('index')
