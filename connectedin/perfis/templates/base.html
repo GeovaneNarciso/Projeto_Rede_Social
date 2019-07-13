@@ -10,6 +10,8 @@
         <script src="{% static 'jquery/jquery.slim.min.js' %}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
         <script src="{% static 'bootstrap/4.3.1/js/bootstrap.min.js' %}"></script>
+        <!-- icon -->
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
     </head>
     <body>
         <header class="pl-5 pr-5 border-bottom">
@@ -18,8 +20,19 @@
                 
                 <div class="collapse navbar-collapse">
                     <ul class="navbar-nav ml-auto">
-                        <li class="nav-item">
-                            <a href="{% url 'index' %}" class="nav-link text-primary">{{perfil_logado.nome}}</a>
+                        <li class="nav-item dropdown">
+                            <button href="{% url 'index' %}" class="nav-link btn btn-link text-primary dropdown-toggle" id="dropdownPerfil" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> 
+                                {% if perfil_logado.foto %}
+                                    <img class="image-perfil">{{perfil_logado.foto}}</img>
+                                {% else %}
+                                    <i class="fas fa-user-circle"> </i>
+                                {% endif %}
+                                {{perfil_logado.nome}}
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownPerfil">
+                                {% block dropdown_usuario %}
+                                {% endblock %}
+                            </div>
                         </li>
                         <li class="nav-item">
                             <a href="/logout/" class="nav-link text-primary">Logout</a>
@@ -45,6 +58,10 @@
                     {% block right %}
                     {% endblock %}
                 </div>
+            </div>
+            <div class="row">
+                {% block main %}
+                {% endblock %}
             </div>
         </div>
     {% block script %}

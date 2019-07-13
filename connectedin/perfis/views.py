@@ -3,7 +3,9 @@ from .models import Perfil, Convite
 from django.shortcuts import redirect
 from django.views.generic.base import View
 from django.contrib.auth.decorators import login_required
-
+from django.utils.decorators import method_decorator
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password, check_password
 
 @login_required
 def index(request):
@@ -55,5 +57,17 @@ def desfazer_amizade(request, id_contato):
     contato_remove = Perfil.objects.get(id=id_contato)
     perfil_logado = get_perfil_logado(request)
     perfil_logado.contatos.remove(contato_remove)
+    
+    return redirect('index')
+
+
+@login_required
+def alterar_senha(request):
+    perfil_logado = get_perfil_logado(request).usuario
+    senha_atual = request.POST['senha_atual']
+    if check_password(senha_atual, perfil_logado.password):
+        perfil_logado.set_password(request.POST['senha_nova'])
+        perfil_logado.save()
+        
     
     return redirect('index')
