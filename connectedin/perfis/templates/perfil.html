@@ -19,8 +19,18 @@
         <a href="{% url 'dar_super_usuario' perfil.id %}"
             class="btn btn-success" role="button">Dar super usuário</a>
     {% else %}
-            <a href="{% url 'retirar_super_usuario' perfil.id %}"
-                class="btn btn-danger" role="button">Retirar super usuário</a>
+        <a href="{% url 'retirar_super_usuario' perfil.id %}"
+            class="btn btn-danger" role="button">Retirar super usuário</a>
     {% endif %}
+    
+    <div class="ml-4">
+        {% if perfil in perfil_logado.bloqueados.all %}
+            <a href="{% url 'desbloquear' perfil.id %}"
+                class="btn btn-outline-danger" role="button">Desbloquear</a>
+        {% elif perfil in perfil_logado.contatos.all  %}
+            <a href="{% url 'bloquear' perfil.id %}"
+                class="btn btn-outline-danger" role="button">Bloquear</a>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
