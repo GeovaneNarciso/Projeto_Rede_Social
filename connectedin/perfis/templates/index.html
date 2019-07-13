@@ -1,5 +1,11 @@
 {% extends  "base.html" %}
 
+{% block dropdown_usuario %}
+<button type="button" class="btn btn-link" data-toggle="modal" data-target="#alterarSenhaModal">
+    Alterar senha
+</button>
+{% endblock %}
+
 {% block left %}
 <!-- CONTATOS -->
 <nav class="card">
@@ -119,4 +125,57 @@
         </div>
     </div>
 </aside>
+{% endblock %}
+
+{% block main %}
+    <!-- Modal -->
+<div class="modal fade" id="alterarSenhaModal" tabindex="-1" role="dialog" aria-labelledby="alterarSenhaModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="alterarSenhaModalLabel">Alterar senha</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form method="POST" action="{% url 'alterar_senha' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="senha_atual">Senha atual</label>
+                    <input type="password" class="form-control" id="senha_atual" placeholder="digite a senha atual" name="senha_atual">
+                </div>  
+                
+                <div class="form-group">
+                    <label for="senha_nova">Senha nova</label>
+                    <input type="password" class="form-control" id="senha_nova" placeholder="digite a nova senha" name="senha_nova" onkeyup="verificar_senhas()">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmar_senha">Confirmar senha</label>
+                    <input type="password" class="form-control" id="confirmar_senha" placeholder="digite novamente a nova senha" name="confirmar_senha" onkeyup="verificar_senhas()">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" disabled id="salvar_senha">Salvar</button>
+                </div>
+            </form>
+
+        </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    function verificar_senhas(){
+        let nova = document.getElementById('senha_nova').value
+        let confirmar = document.getElementById('confirmar_senha').value
+        if(nova === confirmar)
+            document.getElementById('salvar_senha').disabled = false;
+        else
+        document.getElementById('salvar_senha').disabled = true;
+    }
+</script>
 {% endblock %}

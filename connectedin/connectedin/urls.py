@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),
     path('perfil/<int:perfil_id>/', views.exibir, name='exibir'),
+    path('perfil/alterar_senha/', views.alterar_senha, name='alterar_senha'),
     path('perfil/<int:perfil_id>/convidar/', views.convidar, name='convidar'),
     path('convite/<int:convite_id>/aceitar/', views.aceitar, name='aceitar'),
     path('convite/<int:convite_id>/rejeitar/', views.rejeitar, name='rejeitar'),
