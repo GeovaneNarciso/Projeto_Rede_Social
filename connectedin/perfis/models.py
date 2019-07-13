@@ -6,9 +6,10 @@ class Perfil(models.Model):
     nome = models.CharField(max_length=255, null=False)
     telefone = models.CharField(max_length=15, null=False)
     nome_empresa = models.CharField(max_length=255, null=False)
-    contatos = models.ManyToManyField('self')
+    contatos = models.ManyToManyField('self', related_name='meus_contatos')
     usuario = models.OneToOneField(User, related_name='perfil', on_delete=models.CASCADE)
-    foto = models.ImageField(upload_to='images/foto_perfil', max_length=None, null=True)
+    foto = models.ImageField(upload_to='perfis/static/images/foto_perfil', max_length=None, null=True)
+    bloqueados = models.ManyToManyField('self', related_name='perfis_bloqueados')
 
     def __str__(self):
         return self.nome

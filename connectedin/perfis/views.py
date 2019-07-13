@@ -90,4 +90,19 @@ def retirar_super_usuario(request, perfil_id):
 @login_required
 def pesquisar_usuarios(request):
     perfis_econtrados = Perfil.objects.filter(nome__startswith=request.POST['nome_pesquisar'])        
-    return render(request, 'pesquisar_perfil.html', {'perfis_econtrados': perfis_econtrados})
+    context = {'perfis_econtrados': perfis_econtrados, 'perfil_logado': get_perfil_logado(request)}
+    return render(request, 'pesquisar_perfil.html', context)
+
+
+@login_required
+def bloquear(request, perfil_id):
+    bloquear = Perfil.objects.get(id=perfil_id)
+    get_perfil_logado(request).bloqueados.add(bloquear)
+    return redirect('index')
+
+
+@login_required
+def desbloquear(request, perfil_id):
+    bloquear = Perfil.objects.get(id=perfil_id)
+    get_perfil_logado(request).bloqueados.remove(bloquear)
+    return redirect('index')

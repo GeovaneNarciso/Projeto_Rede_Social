@@ -25,7 +25,7 @@
                 <a href="{% url 'exibir' contato.id%}">{{ contato.nome }} // {{ contato.email }}</a>
                 <form method="POST" action="/contatos/{{contato.id}}/desfazer/">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-danger">X</button>
+                    <a href="{% url 'desfazer_amizade' contato.id %}" class="text-danger"><i class="fas fa-times text"></i></a>
                 </form>
 
             </li>

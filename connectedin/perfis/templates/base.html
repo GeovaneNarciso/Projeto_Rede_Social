@@ -23,7 +23,7 @@
                         <li class="nav-item dropdown">
                             <button href="{% url 'index' %}" class="nav-link btn btn-link text-primary dropdown-toggle" id="dropdownPerfil" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> 
                                 {% if perfil_logado.foto %}
-                                    <img class="image-perfil">{{perfil_logado.foto}}</img>
+                                    <img class="image-perfil" src="{% static 'perfil_logado.foto' %}">
                                 {% else %}
                                     <i class="fas fa-user-circle"> </i>
                                 {% endif %}
