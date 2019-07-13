@@ -67,7 +67,27 @@ def alterar_senha(request):
     senha_atual = request.POST['senha_atual']
     if check_password(senha_atual, perfil_logado.password):
         perfil_logado.set_password(request.POST['senha_nova'])
-        perfil_logado.save()
-        
-    
+        perfil_logado.save()    
     return redirect('index')
+
+
+@login_required
+def dar_super_usuario(request, perfil_id):
+    perfil = Perfil.objects.get(id=perfil_id).usuario
+    perfil.is_superuser = True
+    perfil.save()
+    return redirect('index')
+
+@login_required
+def retirar_super_usuario(request, perfil_id):
+    print('pwidos')
+    perfil = Perfil.objects.get(id=perfil_id).usuario
+    perfil.is_superuser = False
+    perfil.save()
+    return redirect('index')
+
+
+@login_required
+def pesquisar_usuarios(request):
+    perfis_econtrados = Perfil.objects.filter(nome__startswith=request.POST['nome_pesquisar'])        
+    return render(request, 'pesquisar_perfil.html', {'perfis_econtrados': perfis_econtrados})
