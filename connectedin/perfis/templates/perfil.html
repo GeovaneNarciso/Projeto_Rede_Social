@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block body %}
+{% block center %}
 <div class="row">
     <div class="col-lg-12">
         <h2 style="margin-top:0">{{ perfil.nome }}</h2>
@@ -15,5 +15,12 @@
             class="btn btn-success" role="button">CONVIDAR</a>
         {% endif %}
     </div>
+    {% if not perfil.usuario.is_superuser %}
+        <a href="{% url 'dar_super_usuario' perfil.id %}"
+            class="btn btn-success" role="button">Dar super usuário</a>
+    {% else %}
+            <a href="{% url 'retirar_super_usuario' perfil.id %}"
+                class="btn btn-danger" role="button">Retirar super usuário</a>
+    {% endif %}
 </div>
 {% endblock %}

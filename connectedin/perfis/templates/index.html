@@ -10,7 +10,12 @@
 <!-- CONTATOS -->
 <nav class="card">
     <div class="card-header">
-        Contatos
+        <div>Contatos</div>
+        <form method="POST" action="{% url 'pesquisar_usuarios' %}" class="form-row mt-2">
+            {% csrf_token %}
+            <input type="text" class="form-control col-9" name="nome_pesquisar">
+            <button class="btn btn-sm btn-outline-dark ml-2 col-2"><i class="fas fa-search"></i></button>
+        </form>
     </div>
     <ul class="list-group list-group-flush">
         {% with total_contatos=perfil_logado.contatos.count %}
