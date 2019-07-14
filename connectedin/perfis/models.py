@@ -10,6 +10,7 @@ class Perfil(models.Model):
     usuario = models.OneToOneField(User, related_name='perfil', on_delete=models.CASCADE)
     foto = models.ImageField(upload_to='perfis/static/images/foto_perfil', max_length=None, null=True)
     bloqueados = models.ManyToManyField('self', related_name='perfis_bloqueados')
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.nome

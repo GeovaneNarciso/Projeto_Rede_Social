@@ -4,6 +4,9 @@
 <button type="button" class="btn btn-link" data-toggle="modal" data-target="#alterarSenhaModal">
     Alterar senha
 </button>
+<button type="button" class="btn btn-link" data-toggle="modal" data-target="#desativarPerfilModal">
+    Desativar perfil
+</button>
 {% endblock %}
 
 {% block left %}
@@ -165,7 +168,34 @@
                     <button type="submit" class="btn btn-primary" disabled id="salvar_senha">Salvar</button>
                 </div>
             </form>
+        </div>
+        </div>
+    </div>
+</div>
 
+<!-- Desativar Perfil Modal -->
+<div class="modal fade" id="desativarPerfilModal" tabindex="-1" role="dialog" aria-labelledby="desativarPerfilModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="alterarSenhaModalLabel">Desativar perfil</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form method="POST" action="{% url 'desativar_perfil' %}">
+                <p>Lamentamos que você não esteja satisfeito com nossos serviços. Por favor, conte-nos o motivo da sua saída:</p>
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="exampleFormControlTextarea1">Motivo:</label>
+                    <textarea class="form-control" id="textAreaMotivo" name="motivo" rows="3"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger" id="desativar_perfil">Desativar perfil</button>
+                </div>
+            </form>
         </div>
         </div>
     </div>

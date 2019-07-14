@@ -6,13 +6,29 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.auth import logout
 
 @login_required
 def index(request):
+    perfil = get_perfil_logado(request)
+    if not perfil.is_active:
+        return redirect('reativar_perfil')
+    
     return render(request, 'index.html',
                   {'perfis': Perfil.objects.all(),
                    'perfil_logado': get_perfil_logado(request)})
 
+
+@login_required
+def reativar_perfil(request):
+    if request.POST:
+        perfil_logado = get_perfil_logado(request)
+        perfil_logado.is_active = True
+        perfil_logado.save()
+        redirect('index')
+
+    return render(request, 'reativar_perfil.html', {'perfil_logado': get_perfil_logado(request)})
+    
 
 @login_required
 def exibir(request, perfil_id):
@@ -68,6 +84,15 @@ def alterar_senha(request):
     if check_password(senha_atual, perfil_logado.password):
         perfil_logado.set_password(request.POST['senha_nova'])
         perfil_logado.save()    
+    return redirect('index')
+
+@login_required
+def desativar_perfil(request):
+    perfil_logado = get_perfil_logado(request)
+    perfil_logado.is_active = False
+    perfil_logado.save()
+    logout(request)
+
     return redirect('index')
 
 
