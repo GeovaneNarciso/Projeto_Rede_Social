@@ -1,18 +1,25 @@
 {% extends  "base.html" %}
-{% block main %}    
+{% block center %}    
     <div class="card">
         <div class="card-header">
             Reativar perfil
         </div>
-        <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-                <p>Olá! Estamos felizes em ter você de volta! Deseja reativar o seu perfil?</p>
-            </li>
-        </ul>
-        <form method="POST">
+        <div class="card-body">
+            <h5 class="card-title">Olá, {{perfil_logado.nome.title}} !</h5>
+            <p class="card-text">Estamos felizes em ter você de volta! Deseja reativar o seu perfil?</p>
+        </div>
+        <form method="POST" class="m-3">
             {% csrf_token %}
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn btn-success" id="reativar_perfil">Reativar perfil</button>
+            <input type="checkbox" value="rativar" name="reativar" hidden id='checkbox-ativar'>
+            <button type="submit" class="btn btn-secondary mr-2" data-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-success" id="reativar_perfil" onclick="selecionarReativar()">Reativar perfil</button>
         </form>
     </div>
+{% endblock %}
+{% block script %}
+<script>
+    function selecionarReativar(){
+        document.getElementById('checkbox-ativar').checked = true;
+    }
+</script>
 {% endblock %}

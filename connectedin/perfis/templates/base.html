@@ -12,12 +12,30 @@
         <script src="{% static 'bootstrap/4.3.1/js/bootstrap.min.js' %}"></script>
         <!-- icon -->
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+        <style>
+            .image-upload > input
+            {
+                display: none;
+            }
+
+            .upload-icon
+            {
+                cursor: pointer;
+            }
+        </style>
     </head>
     <body>
         <header class="pl-5 pr-5 border-bottom">
             <nav class="navbar navbar-expand-sm navbar-light">
                 <a href="{% url 'index' %}" class="navbar-brand text-muted">ConnectedIn</a>
-                
+                <div>
+                    {% for message in messages.error %}
+                        <div class="mt-4 alert alert-danger">{{ message }}</div>
+                    {% endfor %}
+                    {% for message in messages.success %}
+                        <div class="mt-4 alert alert-success">{{ message }}</div>
+                    {% endfor %}
+                </div>
                 <div class="collapse navbar-collapse">
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item dropdown">
@@ -30,6 +48,12 @@
                                 {{perfil_logado.nome}}
                             </button>
                             <div class="dropdown-menu" aria-labelledby="dropdownPerfil">
+                                <button type="button" class="btn btn-link" data-toggle="modal" data-target="#alterarSenhaModal">
+                                    Alterar senha
+                                </button>
+                                <button type="button" class="btn btn-link" data-toggle="modal" data-target="#desativarPerfilModal">
+                                    Desativar perfil
+                                </button>
                                 {% block dropdown_usuario %}
                                 {% endblock %}
                             </div>
@@ -64,7 +88,81 @@
                 {% endblock %}
             </div>
         </div>
+        <!-- Modal Alterar Senha -->
+    <div class="modal fade" id="alterarSenhaModal" tabindex="-1" role="dialog" aria-labelledby="alterarSenhaModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="alterarSenhaModalLabel">Alterar senha</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'alterar_senha' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="senha_atual">Senha atual</label>
+                        <input type="password" class="form-control" id="senha_atual" placeholder="digite a senha atual" name="senha_atual" required>
+                    </div>  
+                    
+                    <div class="form-group">
+                        <label for="senha_nova">Senha nova</label>
+                        <input type="password" class="form-control" id="senha_nova" placeholder="digite a nova senha" name="senha_nova" onkeyup="verificar_senhas()" required>
+                    </div>
+    
+                    <div class="form-group">
+                        <label for="confirmar_senha">Confirmar senha</label>
+                        <input type="password" class="form-control" id="confirmar_senha" placeholder="digite novamente a nova senha" name="confirmar_senha" onkeyup="verificar_senhas()" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" disabled id="salvar_senha">Salvar</button>
+                    </div>
+                </form>
+            </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Desativar Perfil Modal -->
+    <div class="modal fade" id="desativarPerfilModal" tabindex="-1" role="dialog" aria-labelledby="desativarPerfilModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="alterarSenhaModalLabel">Desativar perfil</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'desativar_perfil' %}">
+                    <p>Lamentamos que você não esteja satisfeito com nossos serviços. Por favor, conte-nos o motivo da sua saída:</p>
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="exampleFormControlTextarea1">Motivo:</label>
+                        <textarea class="form-control" id="textAreaMotivo" name="motivo" rows="3"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger" id="desativar_perfil">Desativar perfil</button>
+                    </div>
+                </form>
+            </div>
+            </div>
+        </div>
+    </div>
     {% block script %}
     {% endblock %}
+    <script>
+        function verificar_senhas(){
+            let nova = document.getElementById('senha_nova').value
+            let confirmar = document.getElementById('confirmar_senha').value
+            if(nova === confirmar)
+                document.getElementById('salvar_senha').disabled = false;
+            else
+            document.getElementById('salvar_senha').disabled = true;
+        }
+    </script>
     </body>
 </html>
