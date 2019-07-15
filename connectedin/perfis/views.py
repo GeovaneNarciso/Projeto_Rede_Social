@@ -7,25 +7,39 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth import logout
+from postagem.forms import FormPost
+
 
 @login_required
-def index(request):
+def index(request):    
     perfil = get_perfil_logado(request)
+    postagens = list(perfil.postagens.all().order_by('data_post'))
+    for contato in perfil.contatos.filter(is_active=True):
+        postagens += list(contato.postagens.all())
+    postagens.sort(key=lambda post: post.data_post, reverse=True)
+
     if not perfil.is_active:
         return redirect('reativar_perfil')
     
     return render(request, 'index.html',
                   {'perfis': Perfil.objects.all(),
-                   'perfil_logado': get_perfil_logado(request)})
+                   'perfil_logado': get_perfil_logado(request),
+                   'form_post': FormPost(),
+                   'postagens': postagens})
 
 
 @login_required
 def reativar_perfil(request):
     if request.POST:
+        print(request.POST.keys())
+        if not 'reativar' in request.POST.keys():
+            logout(request)
+            return redirect('login')
+        
         perfil_logado = get_perfil_logado(request)
         perfil_logado.is_active = True
         perfil_logado.save()
-        redirect('index')
+        return redirect('index')
 
     return render(request, 'reativar_perfil.html', {'perfil_logado': get_perfil_logado(request)})
     
@@ -93,7 +107,7 @@ def desativar_perfil(request):
     perfil_logado.save()
     logout(request)
 
-    return redirect('index')
+    return redirect('login')
 
 
 @login_required
@@ -113,8 +127,8 @@ def retirar_super_usuario(request, perfil_id):
 
 
 @login_required
-def pesquisar_usuarios(request):
-    perfis_econtrados = Perfil.objects.filter(nome__startswith=request.POST['nome_pesquisar'])        
+def pesquisar_usuarios(request, nome):
+    perfis_econtrados = Perfil.objects.filter(nome__startswith=nome, is_active=True)
     context = {'perfis_econtrados': perfis_econtrados, 'perfil_logado': get_perfil_logado(request)}
     return render(request, 'pesquisar_perfil.html', context)
 

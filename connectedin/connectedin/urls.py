@@ -15,9 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+import connectedin.settings as settings
+from django.conf.urls.static import static
 from perfis import views
 from usuarios.views import RegistrarUsuarioView
 from django.contrib.auth import views as v
+import postagem.views
 
 
 urlpatterns = [
@@ -32,12 +35,16 @@ urlpatterns = [
     path('perfil/desativar_perfil/', views.desativar_perfil, name='desativar_perfil'),
     path('perfil/reativar_perfil/', views.reativar_perfil, name='reativar_perfil'),    
     path('perfil/retirar-superuser/<int:perfil_id>/', views.retirar_super_usuario, name='retirar_super_usuario'),
-    path('perfil/pesquisar/', views.pesquisar_usuarios, name='pesquisar_usuarios'),
+    path('perfil/pesquisar/<str:nome>/', views.pesquisar_usuarios, name='pesquisar_usuarios'),
     path('convite/<int:convite_id>/aceitar/', views.aceitar, name='aceitar'),
     path('convite/<int:convite_id>/rejeitar/', views.rejeitar, name='rejeitar'),
     path('contatos/<int:id_contato>/desfazer/', views.desfazer_amizade, name='desfazer_amizade'),
+    path('perfil/nova_postagem/', postagem.views.nova_postagem, name='nova_postagem'),
+    path('perfil/gostar/<int:id_postagem>/', postagem.views.curtir_postagem, name='gostar'),
+    path('perfil/nao-gostar/<int:id_postagem>/', postagem.views.nao_curtir_postagem, name='nao_gostar'),
+    path('perfil/comentar/<int:id_postagem>/', postagem.views.comentar, name='comentar'),
     path('registrar/', RegistrarUsuarioView.as_view(), name='registrar'),
     path('login/', v.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', v.LogoutView.as_view(template_name='login.html'), name='logout')
 
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
