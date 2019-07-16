@@ -13,14 +13,23 @@
         <!-- icon -->
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
         <style>
-            .image-upload > input
-            {
+            .image-perfil{
+                height: 32px;
+                width: 32px;
+                border-radius: 50%;               
+                margin-right: 7px
+            }
+
+            .image-upload > input{
                 display: none;
             }
 
-            .upload-icon
-            {
+            .upload-icon{
                 cursor: pointer;
+            }
+            .alert-error{
+                background: #f8d7da;
+                color: #812d3b;
             }
         </style>
     </head>
@@ -28,28 +37,42 @@
         <header class="pl-5 pr-5 border-bottom">
             <nav class="navbar navbar-expand-sm navbar-light">
                 <a href="{% url 'index' %}" class="navbar-brand text-muted">ConnectedIn</a>
-                <div>
-                    {% for message in messages.error %}
-                        <div class="mt-4 alert alert-danger">{{ message }}</div>
+                
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="mt-4 alert alert-{{message.tags}} d-block w-100 message">
+                            {{ message }}
+                            <button type="button" class="close btn-message-close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
                     {% endfor %}
-                    {% for message in messages.success %}
-                        <div class="mt-4 alert alert-success">{{ message }}</div>
-                    {% endfor %}
-                </div>
+                    <script>
+                        setTimeout(function(){ 
+                        let btns = document.querySelectorAll('.btn-message-close')
+                        for(let i = 0; i < btns.length; i++)
+                            btns[i].click()
+                        }, 5000);           
+                    </script>
+                {% endif %}
+        
                 <div class="collapse navbar-collapse">
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item dropdown">
                             <button href="{% url 'index' %}" class="nav-link btn btn-link text-primary dropdown-toggle" id="dropdownPerfil" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> 
                                 {% if perfil_logado.foto %}
-                                    <img class="image-perfil" src="{% static 'perfil_logado.foto' %}">
+                                    <img class="image-perfil" src="/media/{{perfil_logado.foto}}">
                                 {% else %}
-                                    <i class="fas fa-user-circle"> </i>
+                                    <i class="fas fa-user-circle h3 align-top"> </i>
                                 {% endif %}
                                 {{perfil_logado.nome}}
                             </button>
                             <div class="dropdown-menu" aria-labelledby="dropdownPerfil">
                                 <button type="button" class="btn btn-link" data-toggle="modal" data-target="#alterarSenhaModal">
                                     Alterar senha
+                                </button>
+                                <button type="button" class="btn btn-link" data-toggle="modal" data-target="#alterarFotoModal">
+                                    Alterar foto
                                 </button>
                                 <button type="button" class="btn btn-link" data-toggle="modal" data-target="#desativarPerfilModal">
                                     Desativar perfil
@@ -58,6 +81,11 @@
                                 {% endblock %}
                             </div>
                         </li>
+                        {% if perfil_logado.usuario.is_superuser %}
+                            <li class="nav-item">
+                                <a href="/pagina_de_superusuario/" class="nav-link text-primary">Página de superusuário</a>
+                            </li>
+                        {% endif %}
                         <li class="nav-item">
                             <a href="/logout/" class="nav-link text-primary">Logout</a>
                         </li>
@@ -124,13 +152,41 @@
             </div>
         </div>
     </div>
-    
+    <!-- alterar Alterar Foto -->
+    <div class="modal fade" id="alterarFotoModal" tabindex="-1" role="dialog" aria-labelledby="alterarFotoModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="alterarFotoModalLabel">Desativar perfil</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{% url 'alterar_foto' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class=" text-center">
+                        <label for="id_foto_perfil" class="text-primary h1 upload-icon">
+                            <i class="fas fa-camera-retro pt-2"></i>
+                        </label>
+                        <input type="file" name="foto" accept="image/*" id="id_foto_perfil">
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger" id="alterar_foto">Alterar Foto</button>
+                    </div>
+                </form>
+            </div>
+            </div>
+        </div>
+    </div>
     <!-- Desativar Perfil Modal -->
     <div class="modal fade" id="desativarPerfilModal" tabindex="-1" role="dialog" aria-labelledby="desativarPerfilModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="alterarSenhaModalLabel">Desativar perfil</h5>
+                <h5 class="modal-title" id="desativarPerfilModalLabel">Desativar perfil</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
                 </button>
@@ -141,7 +197,7 @@
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="exampleFormControlTextarea1">Motivo:</label>
-                        <textarea class="form-control" id="textAreaMotivo" name="motivo" rows="3"></textarea>
+                        <textarea class="form-control" id="textAreaMotivo" name="motivo" rows="3" required></textarea>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>

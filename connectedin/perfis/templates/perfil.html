@@ -1,18 +1,32 @@
 {% extends "base.html" %}
+
 {% block center %}
 <div class="row">
     <div class="col-lg-12">
-        <h2 style="margin-top:0">{{ perfil.nome }}</h2>
+        <h2 style="margin-top:0" class="border-bottom pb-3">
+            {{ perfil.nome }} 
+            <span class="ml-4">
+                {% if perfil.foto %}
+                    <img class="" src="/media/{{perfil.foto}}" style="height: 100px; border-radius: 20%">
+                {% else %}
+                    <i class="fas fa-user-circle h1 align-top"> </i>
+                {% endif %}
+            </span>
+        </h2>
         <address>
-            <strong>{{ perfil.nome_empresa }}</strong><br/>
+            <strong>{{ perfil.nome_empresa }}</strong>
+            <br/>
             <abbr title="Telefone">Tel:</abbr>{{ perfil.telefone }}<br/>
             <a href="mailto:{{ perfil.email }}">{{ perfil.email }}</a><br/><br/>
         </address>
         {% if ja_eh_contato %}
             <div class="well well-sm">Vocês estão conectadins!</div>
-        {% else %}
+        {% elif not perfil in perfil_logado.perfis_convidados %}
             <a href="{% url 'convidar' perfil.id %}"
             class="btn btn-success" role="button">CONVIDAR</a>
+        {% else %}
+            <a href="{% url 'remover_convite' perfil.id %}"
+            class="btn btn-success" role="button">REMOVER CONVITE</a>
         {% endif %}
     </div>
     {% if not perfil.usuario.is_superuser %}
@@ -28,9 +42,19 @@
             <a href="{% url 'desbloquear' perfil.id %}"
                 class="btn btn-outline-danger" role="button">Desbloquear</a>
         {% elif perfil in perfil_logado.contatos.all  %}
-            <a href="{% url 'bloquear' perfil.id %}"
-                class="btn btn-outline-danger" role="button">Bloquear</a>
+            <button type="button" class="btn btn-outline-danger" onclick="confirmBloquear({{perfil.id}})">Bloquear</button>
+            <!-- <a href="{% url 'bloquear' perfil.id %}"
+                class="btn btn-outline-danger" role="button">Bloquear</a> -->
         {% endif %}
     </div>
 </div>
+{% endblock %}
+
+{%  block script %}
+    <script>
+        function confirmBloquear(perfil){
+            if (confirm('Deseja realmente bloquear este perfil?'))
+                document.location.href = '/perfil/bloquear/' + perfil + '/'
+        }
+    </script>
 {% endblock %}
