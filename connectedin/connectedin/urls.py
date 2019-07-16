@@ -51,6 +51,7 @@ urlpatterns = [
     path('postagem/remover_comentario/<int:id_comentario>/', postagem.views.remover_comentario, name='remover_comentario'),
     path('registrar/', RegistrarUsuarioView.as_view(), name='registrar'),
     path('pagina_de_superusuario/', usuarios.views.pagina_de_superusuario, name='pagina_de_superusuario'),
+    path('estatisticas/', views.estatisticas, name='estatisticas'),
     path('login/', v.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', v.LogoutView.as_view(template_name='login.html'), name='logout')
 

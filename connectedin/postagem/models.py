@@ -55,6 +55,7 @@ class Post(models.Model):
         perfil:  Chave Estrangeira para Perfil com related_name = postagens
         data_post:  DateTimeField com auto_now = True
         perfis_marcados: ManyToMany com Perfil
+        visivel: BooleanField default True (postagem visivel pro amigos)
         qnt_gostei:  int 
         qnt_nao_gostei:  int
         qnt_comentario: int
@@ -65,6 +66,7 @@ class Post(models.Model):
     perfil = models.ForeignKey(Perfil, related_name='postagens', on_delete=models.CASCADE)
     data_post = models.DateTimeField(default=datetime.now)
     perfis_marcados = models.ManyToManyField(Perfil)
+    visivel = models.BooleanField(default=True)
 
     class Meta:
         ordering = ['data_post']

@@ -12,6 +12,8 @@
         <script src="{% static 'bootstrap/4.3.1/js/bootstrap.min.js' %}"></script>
         <!-- icon -->
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+        <!-- google chart -->
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
         <style>
             .image-perfil{
                 height: 32px;
@@ -77,6 +79,9 @@
                                 <button type="button" class="btn btn-link" data-toggle="modal" data-target="#desativarPerfilModal">
                                     Desativar perfil
                                 </button>
+                                <a  class="btn btn-link" href="{% url 'estatisticas' %}">
+                                    Estatisticas
+                                </a>
                                 {% block dropdown_usuario %}
                                 {% endblock %}
                             </div>

@@ -5,7 +5,7 @@ from postagem.models import Post
 class FormPost(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['id', 'texto', 'foto']
+        fields = ['id', 'texto', 'foto', 'visivel']
 
     def __init__(self, *args, **kwargs):
         super(FormPost, self).__init__(*args, **kwargs)

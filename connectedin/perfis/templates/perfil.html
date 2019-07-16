@@ -19,17 +19,19 @@
             <abbr title="Telefone">Tel:</abbr>{{ perfil.telefone }}<br/>
             <a href="mailto:{{ perfil.email }}">{{ perfil.email }}</a><br/><br/>
         </address>
-        {% if ja_eh_contato %}
+        {% if ja_eh_contato and perfil != perfil_logado %}
             <div class="well well-sm">Vocês estão conectadins!</div>
         {% elif not perfil in perfil_logado.perfis_convidados %}
+            {% if perfil != perfil_logado %}
             <a href="{% url 'convidar' perfil.id %}"
             class="btn btn-success" role="button">CONVIDAR</a>
-        {% else %}
+            {% endif %}
+        {% elif perfil != perfil_logado %}
             <a href="{% url 'remover_convite' perfil.id %}"
             class="btn btn-success" role="button">REMOVER CONVITE</a>
         {% endif %}
     </div>
-    {% if not perfil.usuario.is_superuser %}
+    {% if not perfil.usuario.is_superuser and perfil_logado != perfil %}
         <a href="{% url 'dar_super_usuario' perfil.id %}"
             class="btn btn-success" role="button">Dar super usuário</a>
     {% else %}

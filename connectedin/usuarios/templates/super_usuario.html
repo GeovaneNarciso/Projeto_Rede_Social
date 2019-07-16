@@ -6,7 +6,12 @@
         <div class="col-6">
             <a href="{% url 'exibir' perfil.id %}" {% if not perfil.is_active %} class="btn disabled" {% endif %}>{{perfil.nome}}</a>
         </div>
-        {% if not perfil in perfil_logado.contatos.all %}
+        {% if perfil in perfil_logado.perfis_convidados %}
+            <div class="col-2">   
+                <a href="{% url 'remover_convite' perfil.id %}"
+                    class="btn btn-sm btn-success" role="button">Remover Convite</a>
+            </div>
+        {% elif not perfil in perfil_logado.contatos.all %}
             <div class="col-2">
                 <a href="{% url 'convidar' perfil.id %}" class="btn btn-success btn-sm {% if not perfil.is_active %} disabled {% endif %}">Adicionar</a>
             </div>

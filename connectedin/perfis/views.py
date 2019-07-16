@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.shortcuts import render
 from .models import Perfil, Convite
 from django.shortcuts import redirect
@@ -9,6 +10,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth import logout
 from postagem.forms import FormPost
+from postagem.models import Post
 from .forms import FormFotoPerfil
 from django.contrib import messages
 
@@ -18,12 +20,13 @@ LIMITE_PAGINATION = 15
 @login_required
 def index(request):
     perfil = get_perfil_logado(request)
+    
     postagens = list(perfil.postagens.all().order_by('data_post'))
     bloqueados = perfil.bloqueados.all()
     for contato in perfil.contatos.filter(is_active=True):
         if contato in bloqueados:  # nao mostrar os bloqueados
             continue
-        postagens += list(contato.postagens.all())
+        postagens += list(contato.postagens.all().filter(visivel=True))
     postagens.sort(key=lambda post: post.data_post, reverse=True)
 
     if not perfil.is_active:
@@ -173,7 +176,7 @@ def dar_super_usuario(request, perfil_id):
 
 @login_required
 def retirar_super_usuario(request, perfil_id):
-    if not get_perfil_logado(request).is_superuser:
+    if not get_perfil_logado(request).usuario.is_superuser:
         mensagem = 'Você não tem acesso a esta função!'
         mensagem.error(request, mensagem)
         return redirect('index')
@@ -182,8 +185,8 @@ def retirar_super_usuario(request, perfil_id):
     perfil.is_superuser = False
     perfil.save()
 
-    mensagem = 'Super usuário retidado do(a) {}!'.format(perfiç)
-    mensagem.success(request, mensagem)
+    mensagem = 'Super usuário retidado do(a) {}!'.format(perfil)
+    messages.success(request, mensagem)
     return redirect('index')
 
 
@@ -243,3 +246,30 @@ def alterar_foto(request):
             messages.error(request, mensagem)
             messages.error(request, form.errors)
     return redirect('index')
+
+
+@login_required
+def estatisticas(request):
+    perfil = get_perfil_logado(request)
+    context = {'posts': [], 'reacoes': [], 'comentarios': [], 'perfil_logado': perfil}
+    now = datetime.now()
+
+    MESES = {'janeiro': 1, 'fevereiro': 2, 'marco': 3, 'abril': 4, 'maio': 5, 
+             'junho': 6, 'julho': 7, 'agosto': 8, 'setembro': 9, 'outubro': 10,
+             'novembro': 11, 'dezembro': 12}
+            
+    def count_meses(model, mes):
+        if model == 'post':
+            return perfil.postagens.filter(data_post__year=str(now.year)).filter(data_post__month=str(MESES[mes])).count()
+        elif model == 'reacao':
+            return perfil.reacoes.filter(data_reacao__year=str(now.year)).filter(data_reacao__month=str(MESES[mes])).count()
+        elif model == 'comentario':
+            return perfil.comentarios.filter(data_comentario__year=str(now.year)).filter(data_comentario__month=str(MESES[mes])).count()
+    
+    for key in MESES.keys():
+        context['posts'].append({key: count_meses('post', key)})
+        context['reacoes'].append({key: count_meses('reacao', key)})
+        context['comentarios'].append({key: count_meses('comentario', key)})
+    print(context['posts'])
+    
+    return render(request, 'estatisticas.html', context)

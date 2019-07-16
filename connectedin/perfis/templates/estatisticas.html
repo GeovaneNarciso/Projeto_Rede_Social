@@ -1,0 +1,121 @@
+{% extends  "base.html" %}
+
+{% block main %}
+<script>
+    var posts_count = "{{ posts }}";
+    var reacoes_count = "{{ reacoes  }}";
+    var comentarios_count = "{{ comentarios }}";
+
+    function clean_data(mes, texto){
+        texto = texto.split('{')
+        for(let i = 1; i < texto.length; i++){
+
+            if(texto[i].indexOf(mes) != -1){
+                return parseInt(texto[i].split(':')[1].trim().replace('},', ''))
+            }
+        }
+    }
+    
+    var janeiro = {
+        posts: clean_data('janeiro', posts_count),
+        reacoes: clean_data('janeiro', reacoes_count),
+        comentarios: clean_data('janeiro', comentarios_count)
+    }
+    var fevereiro = {
+        posts: clean_data('fevereiro', posts_count),
+        reacoes: clean_data('fevereiro', reacoes_count),
+        comentarios: clean_data('fevereiro', comentarios_count)
+    }
+    var marco = {
+        posts: clean_data('marco', posts_count),
+        reacoes: clean_data('marco', reacoes_count),
+        comentarios: clean_data('marco', comentarios_count)
+    }
+    var abril = {
+        posts: clean_data('abril', posts_count),
+        reacoes: clean_data('abril', reacoes_count),
+        comentarios: clean_data('abril', comentarios_count)
+    }
+    var maio = {
+        posts: clean_data('maio', posts_count),
+        reacoes: clean_data('maio', reacoes_count),
+        comentarios: clean_data('maio', comentarios_count)
+    }
+    var junho = {
+        posts: clean_data('junho', posts_count),
+        reacoes: clean_data('junho', reacoes_count),
+        comentarios: clean_data('junho', comentarios_count)
+    }
+    var julho = {
+        posts: clean_data('julho', posts_count),
+        reacoes: clean_data('julho', reacoes_count),
+        comentarios: clean_data('julho', comentarios_count)
+    }
+    var agosto = {
+        posts: clean_data('agosto', posts_count),
+        reacoes: clean_data('agosto', reacoes_count),
+        comentarios: clean_data('agosto', comentarios_count)
+    }
+    var setembro = {
+        posts: clean_data('setembro', posts_count),
+        reacoes: clean_data('setembro', reacoes_count),
+        comentarios: clean_data('setembro', comentarios_count)
+    }
+    var outubro = {
+        posts: clean_data('outubro', posts_count),
+        reacoes: clean_data('outubro', reacoes_count),
+        comentarios: clean_data('outubro', comentarios_count)
+    }
+    var novembro = {
+        posts: clean_data('novembro', posts_count),
+        reacoes: clean_data('novembro', reacoes_count),
+        comentarios: clean_data('novembro', comentarios_count)
+    }
+    var dezembro = {
+        posts: clean_data('dezembro', posts_count),
+        reacoes: clean_data('dezembro', reacoes_count),
+        comentarios: clean_data('dezembro', comentarios_count)
+    }
+        
+</script>
+<script type="text/javascript">
+    google.charts.load('current', {'packages':['bar']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        console.log('oi')
+        console.log(janeiro)
+        var data = google.visualization.arrayToDataTable([
+            ['Mês', 'Postagens', 'Reações', 'Comentários'],
+            ['Janeiro', janeiro.posts, janeiro.reacoes, janeiro.comentarios],
+            ['Fevereiro', fevereiro.posts, fevereiro.reacoes, fevereiro.comentarios],
+            ['Março', marco.posts, marco.reacoes, marco.comentarios],
+            ['Abril', abril.posts, abril.reacoes, abril.comentarios],
+            ['Maio', maio.posts, maio.reacoes, maio.comentarios],
+            ['Junho', junho.posts, junho.reacoes, junho.comentarios],
+            ['Julho', julho.posts, julho.reacoes, julho.comentarios],
+            ['Agosto', agosto.posts, agosto.reacoes, agosto.comentarios],
+            ['Setembro', setembro.posts, setembro.reacoes, setembro.comentarios],
+            ['Outubro', outubro.posts, outubro.reacoes, outubro.comentarios],
+            ['Novembro', novembro.posts, novembro.reacoes, novembro.comentarios],
+            ['Dezembro', dezembro.posts, dezembro.reacoes, dezembro.comentarios]
+        ]);
+
+        var options = {
+                chart: {
+                title: 'Atividades durante o ano',
+                subtitle: 'Publicações, Reações a posts de amigos e comentários',
+            }
+        };
+
+        var chart = new google.charts.Bar(document.getElementById('columnchart_material'));
+
+        chart.draw(data, google.charts.Bar.convertOptions(options));
+    }
+</script>
+
+  
+<div id="columnchart_material" style="width: 100%; height: 500px;"></div>
+
+
+{% endblock %}
