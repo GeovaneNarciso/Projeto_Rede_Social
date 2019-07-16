@@ -31,10 +31,10 @@
             class="btn btn-success" role="button">REMOVER CONVITE</a>
         {% endif %}
     </div>
-    {% if not perfil.usuario.is_superuser and perfil_logado != perfil %}
+    {% if not perfil.usuario.is_superuser and perfil_logado != perfil and perfil_logado.usuario.is_superuser %}
         <a href="{% url 'dar_super_usuario' perfil.id %}"
             class="btn btn-success" role="button">Dar super usuário</a>
-    {% else %}
+    {% elif perfil_logado.usuario.is_superuser %}
         <a href="{% url 'retirar_super_usuario' perfil.id %}"
             class="btn btn-danger" role="button">Retirar super usuário</a>
     {% endif %}

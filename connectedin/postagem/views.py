@@ -10,7 +10,7 @@ from .forms import FormPost
 
 @login_required
 def nova_postagem(request):
-    if request.POST: 
+    if request.POST:
         post = Post()
         post.perfil = get_perfil_logado(request)
         form = FormPost(request.POST, request.FILES, instance=post)

@@ -33,11 +33,6 @@ class Perfil(models.Model):
     @property
     def email(self):
         return self.usuario.email
-    
-    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        super(Perfil, self).save(force_insert=False, force_update=False, using=None, update_fields=None)
-        self.nome = self.nome.capitalize()
-        self.save()
 
 
 class Convite(models.Model):

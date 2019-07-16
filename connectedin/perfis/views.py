@@ -136,7 +136,7 @@ def desfazer_amizade(request, id_contato):
     perfil_logado.contatos.remove(contato_remove)
 
     mensagem = 'Amizade com {} foi desfeita com sucesso'.format(contato_remove.nome.capitalize())
-    messages.erro(request, mensagem)
+    messages.error(request, mensagem)
     return redirect('index')
 
 
@@ -228,7 +228,7 @@ def desbloquear(request, perfil_id):
     get_perfil_logado(request).bloqueados.remove(perfil_desbloquear)
 
     mensagem = '{} desbloqueado!'.format(perfil_desbloquear)
-    mensagem.success(request, mensagem)
+    messages.success(request, mensagem)
     return redirect('index')
 
 
