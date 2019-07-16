@@ -13,15 +13,31 @@ class Perfil(models.Model):
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.nome
+        return self.nome.capitalize()
 
     def convidar(self, perfil_convidado):
         convite = Convite(convidador=self, convidado=perfil_convidado)
         convite.save()
+    
+    def remover_convite(self, perfil_convidado):
+        convite = Convite.objects.get(convidador=self, convidado=perfil_convidado)
+        convite.delete()
+    
+    @property
+    def perfis_convidados(self):
+        perfis = []
+        for convite in self.convites_feitos.all():
+            perfis.append(convite.convidado)
+        return perfis
 
     @property
     def email(self):
         return self.usuario.email
+    
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        super(Perfil, self).save(force_insert=False, force_update=False, using=None, update_fields=None)
+        self.nome = self.nome.capitalize()
+        self.save()
 
 
 class Convite(models.Model):
