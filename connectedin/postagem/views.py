@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from perfis.views import get_perfil_logado, index
 from .models import Post, Comentario
 from .forms import FormPost
+from postagem import feedback
 
 
 @login_required
@@ -17,12 +18,12 @@ def nova_postagem(request):
             form = FormPost(request.POST, request.FILES, instance=post)
             if form.is_valid():
                 form.save()
-                messages.success(request, 'Postagem feita com sucesso.')
+                messages.success(request, feedback.POSTAGEM_SUCESS)
             else:
-                messages.error(request, 'Error ao fazer a nova postagem. Por favor, tente novamente')
+                messages.error(request, feedback.POSTAGEM_ERROR)
                 messages.error(request, form.errors)
         else:
-            messages.error(request, 'Poste uma foto ou um texto.')
+            messages.error(request, feedback.POSTAGEM_EMPTY)
     return redirect('index')
 
 
@@ -31,15 +32,15 @@ def curtir_postagem(request, id_postagem):
     post = Post.objects.get(id=id_postagem)
     perfil = get_perfil_logado(request)
 
-    if post.perfil_reagiu_gostei(perfil):  # ja curtiu
-        post.remover_gostar(perfil) # romover gostei
-        messages.success(request, 'Gostei removido.')
+    if post.perfil_reagiu_gostei(perfil):
+        post.remover_gostar(perfil)
+        messages.success(request, feedback.GOSTEI_REMOVE_SUCESS)
     else:
-        if post.perfil_reagiu_nao_gostei(perfil):  # ja tinha um nao gostei
-            post.remover_nao_gostar(perfil)  # romove nao gostei
-            messages.error(request, 'Nao gostei removido.')
+        if post.perfil_reagiu_nao_gostei(perfil):
+            post.remover_nao_gostar(perfil)
+            messages.error(request, feedback.GOSTEI_REMOVE_SUCESS)
         post.gostar(perfil)
-        messages.success(request, 'Gostei adicionado.')
+        messages.success(request, feedback.GOSTEI_ADD_SUCESS)
     
     return redirect('index')
 
@@ -49,16 +50,16 @@ def nao_curtir_postagem(request, id_postagem):
     post = Post.objects.get(id=id_postagem)
     perfil = get_perfil_logado(request)
 
-    if post.perfil_reagiu_nao_gostei(perfil):  # ja tinha um nao gostei
+    if post.perfil_reagiu_nao_gostei(perfil):
         post.remover_nao_gostar(perfil)
-        messages.success(request, 'Não gostei removido.')
+        messages.success(request, feedback.DISLIKE_REMOVE_SUCESS)
     else:
-        if post.perfil_reagiu_gostei(perfil):  # ja curtiu
-            post.remover_gostar(perfil) # romover gostei
+        if post.perfil_reagiu_gostei(perfil):
+            post.remover_gostar(perfil)
         post.nao_gostar(perfil)
         
-        messages.info(request, 'Gostei removido.')
-        messages.success(request, 'Não gostei adicionado.')
+        messages.info(request, feedback.GOSTEI_REMOVE_SUCESS)
+        messages.success(request, feedback.DESLIKE_ADD_SUCESS)
     
     return redirect('index')
 
@@ -66,27 +67,27 @@ def nao_curtir_postagem(request, id_postagem):
 @login_required
 def comentar(request, id_postagem):
     post = Post.objects.get(id=id_postagem)
-    post.comentar(
-        get_perfil_logado(request),
-        request.POST['comentario']
-    )
-    messages.success(request, 'Comentário realizado com sucesso!')
+    
+    if post.comentar(get_perfil_logado(request), request.POST['comentario']):
+        messages.success(request, feedback.COMENTARIO_SUCESS)
+    else:
+        messages.error(request, feedback.COMENTARIO_ERROR)
 
     return redirect('index')
 
+
 @login_required
 def excluir_postagem(request, id_postagem):
-    sucesso = 'Postagem deletada com sucesso'
 
     post = Post.objects.get(id=id_postagem)
     if post.perfil == get_perfil_logado(request):
         post.delete()
-        messages.success(request, sucesso)
+        messages.success(request, feedback.POSTAGEM_EXCLUIDA_SUCESS)
     elif get_perfil_logado(request).usuario.is_superuser:
         post.delete()
-        messages.success(request, sucesso)
+        messages.success(request, feedback.POSTAGEM_EXCLUIDA_SUCESS)
     else:
-        messages.error(request, 'Você não é o dono da postagem para poder excluí-la')
+        messages.error(request, feedback.POSTAGEM_PERFIL_NAO_TEM_AUTORIZACAO)
     
     return redirect('index')
 
@@ -96,18 +97,20 @@ def editar_postagem(request, id_postagem):
     post = Post.objects.get(id=id_postagem)
     form = FormPost(request.POST, request.FILES, instance=post)
     if form.is_valid():
-        form.save()
-        if post.marcar_alguem():
-            messages.success(request, 'Perfis marcados com sucesso!')    
-        messages.success(request, 'Postagem editada com sucesso!')
+        form.save()    
+        messages.success(request, feedback.POSTAGEM_EDITAR_SUCESS)
     else:
-        messages.error(request, 'Error ao editar postagem. Por favor, tente novamente!')
+        messages.error(request, feedback.POSTAGEM_EDITAR_ERROR)
     return redirect('index')
 
 
 @login_required
 def remover_comentario(request, id_comentario):
-    Comentario.objects.get(id=id_comentario).delete()
+    comentario = Comentario.objects.filter(id=id_comentario)
+    if comentario.exists():
+        comentario.delete()
+        messages.success(request, feedback.COMENTARIO_REMOVER_SUCESS)
+    else:
+        messages.error(request, feedback.COMENTARIO_NOT_FOUND)
 
-    messages.success(request, 'Comentário removido com sucesso!')
     return redirect('index')
