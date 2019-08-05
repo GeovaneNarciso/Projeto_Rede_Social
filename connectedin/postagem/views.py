@@ -11,18 +11,18 @@ from .forms import FormPost
 @login_required
 def nova_postagem(request):
     if request.POST:
-        post = Post()
-        post.perfil = get_perfil_logado(request)
-        form = FormPost(request.POST, request.FILES, instance=post)
-        if form.is_valid():
-            form.save()
-            if post.marcar_alguem():
-                messages.success(request, 'Perfis marcados com sucesso.')
-            
-            messages.success(request, 'Postagem feita com sucesso.')
+        if request.FILES or request.POST['texto']:
+            post = Post()
+            post.perfil = get_perfil_logado(request)
+            form = FormPost(request.POST, request.FILES, instance=post)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Postagem feita com sucesso.')
+            else:
+                messages.error(request, 'Error ao fazer a nova postagem. Por favor, tente novamente')
+                messages.error(request, form.errors)
         else:
-            messages.error(request, 'Error ao fazer a nova postagem. Por favor, tente novamente')
-            messages.error(request, form.errors)
+            messages.error(request, 'Poste uma foto ou um texto.')
     return redirect('index')
 
 

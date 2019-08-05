@@ -12,18 +12,16 @@
     </div>
     <ul class="list-group list-group-flush">
         {% with total_contatos=perfil_logado.contatos.count %}
-        {% if total_contatos %}
-        {% for contato in perfil_logado.contatos.all %}
-            <li class="list-group-item">
-                <a href="{% url 'exibir' contato.id%}" {% if not contato.is_active %} class="btn disabled" {% endif %}>{{ contato.nome }} // {{ contato.email }}</a>    
-                <a href="{% url 'desfazer_amizade' contato.id %}" class="text-danger"><i class="fas fa-times text"></i></a>
-            </li>
-        {% endfor %}
-        {% else %}
-            <li class="list-group-item">
-                Você não possui nenhum contato no momento.
-            </li>
-        {% endif %}
+            {% if total_contatos %}
+            {% for contato in perfil_logado.contatos.all %}
+                <li class="list-group-item">
+                    <a href="{% url 'exibir' contato.id%}" {% if not contato.is_active %} class="btn disabled" {% endif %}>{{ contato.nome }} // {{ contato.email }}</a>    
+                    <a href="{% url 'desfazer_amizade' contato.id %}" class="text-danger"><i class="fas fa-times text"></i></a>
+                </li>
+            {% endfor %}
+            {% else %}
+                <li class="list-group-item">Você não possui nenhum contato no momento.</li>
+            {% endif %}
         {% endwith %}
     </ul>
 </nav>
@@ -58,7 +56,7 @@
     <ul class="list-group list-group-flush">
         {% if postagens %}
         {% for post in postagens %}
-        <li class="list-group-item">
+        <li class="list-group-item post">
             <div class="mt-2">
                 <h6 class="font-weight-bold">
                     <a class="text-dark" href="{% url 'exibir' post.perfil.id %}">
@@ -72,12 +70,12 @@
                     {% if post.perfil == perfil_logado %}
                         <div class="float-right">
                             <div class="dropdown">
-                                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="dropdownEditarButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="far fa-edit"></i>
+                                <button class="btn btn-sm btn-light  dropdown-toggle" type="button" id="dropdownEditarButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-h mr-1"></i>
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="dropdownEditarButton">
-                                        <button type="button" class="btn btn-link text-primary pl-4" data-toggle="modal" data-target="#editarPostModal{{forloop.counter}}"><i class="far fa-edit h5"></i> Editar</button>
-                                        <button type="button" onclick="confirmar_excluir_post({{post.id}})" class="dropdown-item text-danger btn btn-link"><i class="fas fa-trash-alt h5"></i> Excluir</button>
+                                        <button type="button" class="btn btn-link text-primary pl-4" data-toggle="modal" data-target="#editarPostModal{{forloop.counter}}"><i class="far fa-edit"></i> Editar</button>
+                                        <button type="button" onclick="confirmar_excluir_post({{post.id}})" class="dropdown-item text-danger btn btn-link"><i class="fas fa-trash-alt"></i> Excluir</button>
                                       </div>
                                 </div>
                         </div>
@@ -87,13 +85,13 @@
                 </h6>
             </div>
             <div class="text-center mt-3 text-justify">
-                {{ post.texto }}
-                <div class="text-left">
+                <div class="post-texto">{{ post.texto }}</div>
+                <div class="text-left" hidden>
                     {% if post.perfis_marcados.all %}
                         <h5 class="d-inline h6">Marcacões:</h5>
                     {% endif %}
                     {% for perfil in post.perfis_marcados.all %}
-                        <span>
+                        <span class="perfis-marcados">
                             <a class="btn btn-link" href="{% url 'exibir' perfil.id %}">@{{perfil.nome}}</a>
                         </span>
                     {% endfor %}
@@ -350,5 +348,21 @@
             if (confirm('Tem certeza que deseja excluir esta postagem ?'))
                 document.location.href = '/postagem/excluir/' + id + '/'
         }
+
+        
+            console.log('marcar')
+            let posts = document.getElementsByClassName('post')
+            for(let i = 0; i < posts.length; i++) {
+                let divTexto = posts[i].getElementsByClassName('post-texto')[0]
+                let divTextoDoPost = posts[i].getElementsByClassName('post-texto')[0]
+                let linkPerfilMarcado = posts[i].querySelectorAll('.perfis-marcados > a')
+                
+                for(let j = 0; j < linkPerfilMarcado.length; j++) {
+                    divTexto.innerHTML = divTexto.textContent.replace(linkPerfilMarcado[j].innerHTML, 
+                        '<a class="btn btn-link" href="' + linkPerfilMarcado[j].href + '">'+ linkPerfilMarcado[j].textContent + '</a>')
+                }
+            }
+        
+        
     </script>
 {% endblock %}

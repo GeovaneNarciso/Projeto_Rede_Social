@@ -11,7 +11,7 @@
                 <a href="{% url 'remover_convite' perfil.id %}"
                     class="btn btn-sm btn-success" role="button">Remover Convite</a>
             </div>
-        {% elif not perfil in perfil_logado.contatos.all %}
+        {% elif not perfil in perfil_logado.contatos.all and perfil != perfil_logado %}
             <div class="col-2">
                 <a href="{% url 'convidar' perfil.id %}" class="btn btn-success btn-sm {% if not perfil.is_active %} disabled {% endif %}">Adicionar</a>
             </div>
